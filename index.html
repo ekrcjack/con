@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生活日語會話一本搞定 - 互動學習工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            display: flex;
+            min-height: 600px;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #f8f9fa;
+            border-right: 1px solid #e0e0e0;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+
+        .unit-btn {
+            display: block;
+            width: 100%;
+            padding: 12px 20px;
+            text-align: left;
+            border: none;
+            background: transparent;
+            color: #333;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-size: 0.95em;
+        }
+
+        .unit-btn:hover {
+            background: #e8e8e8;
+            border-left-color: #667eea;
+        }
+
+        .unit-btn.active {
+            background: #667eea;
+            color: white;
+            border-left-color: #667eea;
+            font-weight: 600;
+        }
+
+        .main {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .unit-title {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .unit-theme {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .scene {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .scene-title {
+            font-size: 1.3em;
+            color: #667eea;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .dialogue-block {
+            margin-bottom: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #764ba2;
+        }
+
+        .speaker {
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.05em;
+        }
+
+        .dialogue-line {
+            margin-bottom: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .dialogue-line:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .lang-label {
+            display: inline-block;
+            font-size: 0.8em;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            margin-right: 10px;
+            margin-bottom: 5px;
+        }
+
+        .text-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .text-content.japanese {
+            font-size: 1.1em;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .text-content.romaji {
+            font-size: 0.95em;
+            color: #666;
+            font-style: italic;
+        }
+
+        .text-content.chinese {
+            font-size: 1em;
+            color: #555;
+        }
+
+        .sound-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .sound-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .sound-btn:active {
+            transform: translateY(0);
+        }
+
+        .sound-btn.playing {
+            background: #ff6b6b;
+        }
+
+        .sound-btn::before {
+            content: "🔊";
+        }
+
+        .sound-btn.playing::before {
+            content: "⏸";
+        }
+
+        .speaker-label {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.9em;
+            margin-right: 10px;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .speaker-label.B {
+            background: #764ba2;
+        }
+
+        .speaker-label.C {
+            background: #ff6b6b;
+        }
+
+        .controls {
+            position: sticky;
+            bottom: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .speed-control label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .speed-control input[type="range"] {
+            width: 150px;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .info-box strong {
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 5px;
+                padding: 10px;
+            }
+
+            .unit-btn {
+                padding: 8px 10px;
+                font-size: 0.85em;
+            }
+
+            .main {
+                padding: 20px;
+            }
+
+            .unit-title {
+                font-size: 1.5em;
+            }
+
+            .header h1 {
+                font-size: 1.5em;
+            }
+        }
+
+        .scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: #667eea #f0f0f0;
+        }
+
+        .scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .scrollbar::-webkit-scrollbar-track {
+            background: #f0f0f0;
+        }
+
+        .scrollbar::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+
+        .scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎌 生活日語會話一本搞定</h1>
+            <p>按🔊按鈕聽發音 | 互動式日語學習工具</p>
+        </div>
+
+        <div class="content">
+            <div class="sidebar scrollbar" id="sidebar"></div>
+            <div class="main scrollbar">
+                <div id="content-area"></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="speed-control">
+                <label>發音速度：</label>
+                <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1">
+                <span id="speedValue">1x</span>
+            </div>
+            <button class="control-btn" id="stopBtn">⏹ 停止發音</button>
+            <button class="control-btn" id="resetBtn">🔄 重置</button>
+        </div>
+    </div>
+
+    <script>
+        // 課程數據 - 單元1到6的完整內容
+        const lessonData = {
+            1: {
+                title: "問候（あいさつ）",
+                theme: "日常問候與禮儀用語",
+                scenes: [
+                    {
+                        name: "場景1：互相碰面時",
+                        lines: [
+                            { speaker: "A", japanese: "やあ、陽子。元気？", romaji: "Yaa, Yōko. Genki?", chinese: "嗨！陽子，你好嗎?" },
+                            { speaker: "B", japanese: "元気よ。あなたは？", romaji: "Genki yo. Anata wa?", chinese: "我很好，你呢?" },
+                            { speaker: "A", japanese: "絶好調。", romaji: "Zettaikōchō.", chinese: "再好不過了!" }
+                        ]
+                    },
+                    {
+                        name: "場景2：早上問候",
+                        lines: [
+                            { speaker: "A", japanese: "早啊、紀之。", romaji: "Hayā, Toshiyuki.", chinese: "早啊，紀之。" },
+                            { speaker: "B", japanese: "やあ、いい天気だね。", romaji: "Yaa, ii tenki da ne.", chinese: "哈囉，天氣真好啊！不是嗎?" },
+                            { speaker: "A", japanese: "本当だね。", romaji: "Hontō da ne.", chinese: "是啊!" }
+                        ]
+                    },
+                    {
+                        name: "場景3：詢問近況",
+                        lines: [
+                            { speaker: "A", japanese: "調子はどうですか？", romaji: "Chōshi wa dō desu ka?", chinese: "過得如何?" },
+                            { speaker: "B", japanese: "まあまあです。君は？", romaji: "Maa maa desu. Kimi wa?", chinese: "普普通通啦!你呢?" },
+                            { speaker: "A", japanese: "まあまあ。", romaji: "Maa maa.", chinese: "還可以啦。" }
+                        ]
+                    },
+                    {
+                        name: "場景4：初次見面",
+                        lines: [
+                            { speaker: "A", japanese: "初めまして、渡辺春男と申します。", romaji: "Hajimemashite, Watanabe Haruo to mōshimasu.", chinese: "初灰見面，我叫渡邊春男。" },
+                            { speaker: "B", japanese: "私は陳淑惠です。", romaji: "Watashi wa Chen Shukkie desu.", chinese: "我叫陳淑惠。" },
+                            { speaker: "A", japanese: "初めまして。", romaji: "Hajimemashite.", chinese: "初灰見面。" },
+                            { speaker: "B", japanese: "こちらこそ、よろしくお願いします。", romaji: "Kochira koso, yoroshiku onegai shimasu.", chinese: "很高興認識你。" }
+                        ]
+                    },
+                    {
+                        name: "場景5：道別時",
+                        lines: [
+                            { speaker: "A", japanese: "晩安、久美子。", romaji: "Ban'an, Kumiko.", chinese: "晚安!久美子。" },
+                            { speaker: "B", japanese: "晩安、莉莉。素敵なドレスね。", romaji: "Ban'an, Riri. Suteki na doresu ne.", chinese: "晚安，莉莉。你的晚禮服好漂亮。" },
+                            { speaker: "A", japanese: "ありがとう。", romaji: "Arigatō.", chinese: "謝謝。" },
+                            { speaker: "A", japanese: "あ、こんな時間！", romaji: "A, konna jikan!", chinese: "哎呀!這麼晚了。我該走了。" },
+                            { speaker: "B", japanese: "楽しかったわ。じゃあね！", romaji: "Tanoshikatta wa. Jā a ne!", chinese: "跟你聊天真是愉快。要保重啊。" },
+                            { speaker: "A", japanese: "バイバイ！また火曜日！", romaji: "Baibai! Mata kayōbi!", chinese: "晚安。改天再見囉!" },
+                            { speaker: "B", japanese: "いいわね。大切にしてね。", romaji: "Ii wa ne. Taisetsuni shite ne.", chinese: "好，要保重喔。" }
+                        ]
+                    }
+                ]
+            },
+            2: {
+                title: "紹介（しょうかい）",
+                theme: "自我介紹和介紹他人",
+                scenes: [
+                    {
+                        name: "場景1：向朋友介紹他人",
+                        lines: [
+                            { speaker: "A", japanese: "リリー、この人は斉藤惠美です。私の東京の友達です。", romaji: "Rirī, kono hito wa Saitō Emi desu. Watashi no Tōkyō no tomodachi desu.", chinese: "莉莉、這位是我的朋友齊藤惠美小姐，她是我在東京的閨友。" },
+                            { speaker: "A", japanese: "惠美、この人は王莉莉です。私の親友です。", romaji: "Emi, kono hito wa Ō Rirī desu. Watashi no shin'yū desu.", chinese: "惠美，這位是王莉莉小姐，是我的好友。" },
+                            { speaker: "B", japanese: "あ、どうぞよろしく。", romaji: "A, dōzo yoroshiku.", chinese: "哦!真高興見到你。" },
+                            { speaker: "C", japanese: "こちらこそ。", romaji: "Kochira koso.", chinese: "我也是，惠美。" }
+                        ]
+                    },
+                    {
+                        name: "場景2：工作場合介紹",
+                        lines: [
+                            { speaker: "A", japanese: "名前は田中です。10時に鈴木さんと約束があります。", romaji: "Namae wa Tanaka desu. Jū ji ni Suzuki-san to yakusoku ga arimasu.", chinese: "我是田中。我和鈴木先生在10點有約。" },
+                            { speaker: "B", japanese: "少々お待ちください。あの、山本氏はいますか？", romaji: "Shōshō o-machi kudasai. Ano, Yamamoto-shi wa imasu ka?", chinese: "請稍待一下。對了，山本先生在嗎？" },
+                            { speaker: "C", japanese: "申し訳ありません。", romaji: "Mōshiwake arimasen.", chinese: "對不起。" }
+                        ]
+                    },
+                    {
+                        name: "場景3：自我介紹",
+                        lines: [
+                            { speaker: "A", japanese: "私は遠藤文子といいます。京都出身で、京都大学経済学部を勉強しています。", romaji: "Watashi wa Endō Fumiko to iimasu. Kyōto shusshin de, Kyōtodaigaku keizaigakubu wo benkyō shite imasu.", chinese: "我叫遠藤文子。我是京都人，在京都大學經濟系唸書。" },
+                            { speaker: "A", japanese: "日本語のほかに、中国語も少し話します。", romaji: "Nihongo no hoka ni, Chūgokugo mo sukoshi hanashimasu.", chinese: "除了日語外，我也會說一點中文。" }
+                        ]
+                    }
+                ]
+            },
+            3: {
+                title: "和陌生人的談話",
+                theme: "與陌生人的基本交流",
+                scenes: [
+                    {
+                        name: "場景1：在街上詢問",
+                        lines: [
+                            { speaker: "A", japanese: "すみません。新宿通りはどこですか？", romaji: "Sumimasen. Shinjuku-dōri wa doko desu ka?", chinese: "對不起，請問新宿街怎麼走?" },
+                            { speaker: "B", japanese: "申し訳ありませんが、その辺りはわかりません。", romaji: "Mōshiwake arimasen ga, sono atari wa wakarimasen.", chinese: "抱歉，我對這附近也不熟。" },
+                            { speaker: "A", japanese: "そうですか。ありがとうございました。", romaji: "Sō desu ka. Arigatō gozaimashita.", chinese: "哦，這樣子啊!謝謝。" }
+                        ]
+                    },
+                    {
+                        name: "場景2：在餐廳",
+                        lines: [
+                            { speaker: "A", japanese: "すみません。", romaji: "Sumimasen.", chinese: "服務生!" },
+                            { speaker: "B", japanese: "いらっしゃいませ。何かご用ですか？", romaji: "Irasshaimase. Nani ka goyō desu ka?", chinese: "您好，需要什麼嗎?" },
+                            { speaker: "A", japanese: "メニューをください。", romaji: "Menyū wo kudasai.", chinese: "請給我菜單。" }
+                        ]
+                    },
+                    {
+                        name: "場景3：在店裡",
+                        lines: [
+                            { speaker: "A", japanese: "すみません。手伝ってもらえますか？", romaji: "Sumimasen. Tetsudatte moraemasu ka?", chinese: "對不起!能幫個忙嗎?" },
+                            { speaker: "B", japanese: "かしこまりました。何かお手伝いしましょうか？", romaji: "Kashikomarimashita. Nani ka otetsudai shimashō ka?", chinese: "當然。有什麼問題嗎?" },
+                            { speaker: "A", japanese: "絹のシャツを見たいんです。", romaji: "Kinu no shatsu wo mitain desu.", chinese: "我想看看一些絲質的罩衫。" }
+                        ]
+                    }
+                ]
+            },
+            4: {
+                title: "再次確認",
+                theme: "信息確認與澄清",
+                scenes: [
+                    {
+                        name: "場景1：確認信息",
+                        lines: [
+                            { speaker: "A", japanese: "もう一度いってもらえますか？", romaji: "Mō ichido itte moraemasu ka?", chinese: "對不起，請再說一灰。" },
+                            { speaker: "B", japanese: "上野公園はどこですか？", romaji: "Ueno kōen wa doko desu ka?", chinese: "我說，能告訴我上野公園在那里嗎?" },
+                            { speaker: "A", japanese: "ああ、いいです。直進してください。", romaji: "Ā, ii desu. Chokushin shite kudasai.", chinese: "啊，好的，請直走。" }
+                        ]
+                    },
+                    {
+                        name: "場景2：確認姓名",
+                        lines: [
+                            { speaker: "A", japanese: "私の名前は若林禎彦です。", romaji: "Watashi no namae wa Wakabayashi Yoshihiko desu.", chinese: "我的名字叫若林禎彦。" },
+                            { speaker: "B", japanese: "あ、ちょっと待ってください。何というお名前ですか？", romaji: "A, chotto matte kudasai. Nan to iu o-namae desu ka?", chinese: "嗯，何在Ivë寸力?那姓什麼?" },
+                            { speaker: "A", japanese: "若林です。若林禎彦です。", romaji: "Wakabayashi desu. Wakabayashi Yoshihiko desu.", chinese: "若林，是若林禎彦。" }
+                        ]
+                    },
+                    {
+                        name: "場景3：確認地點",
+                        lines: [
+                            { speaker: "A", japanese: "私は東京の高田馬場の近くに住んでいます。", romaji: "Watashi wa Tōkyō no Takadanobaba no chikaku ni sunde imasu.", chinese: "我住在東京的高田馬揚車站附近。" },
+                            { speaker: "B", japanese: "古川に住んでいるんですか？", romaji: "Furukawa ni sunde iru n desu ka?", chinese: "你住在古川附近嗎?" },
+                            { speaker: "A", japanese: "高田馬場の近くです。東京です。", romaji: "Takadanobaba no chikaku desu. Tōkyō desu.", chinese: "高田馬揚車站的附近。在東京。" },
+                            { speaker: "B", japanese: "ああ、そうですか！", romaji: "Ā, sō desu ka!", chinese: "啊，是這樣啊!" }
+                        ]
+                    }
+                ]
+            },
+            5: {
+                title: "致謝",
+                theme: "感謝與答謝的表達",
+                scenes: [
+                    {
+                        name: "場景1：感謝幫忙",
+                        lines: [
+                            { speaker: "A", japanese: "山田さん、昨日は手伝ってくれてありがとうございました。", romaji: "Yamada-san, kinō wa tetsudatte kurete arigatō gozaimashita.", chinese: "多謝你昨天的幫忙。" },
+                            { speaker: "B", japanese: "いいえ、よろこんで。", romaji: "Iie, yokokononde.", chinese: "不客氣。" }
+                        ]
+                    },
+                    {
+                        name: "場景2：感謝支持",
+                        lines: [
+                            { speaker: "A", japanese: "チャリティーセールのことで手伝ってくれてありがとう。", romaji: "Charity sēru no koto de tetsudatte kurete arigatō.", chinese: "慈善義賣的事多謝你的幫忙。" },
+                            { speaker: "B", japanese: "別に。役に立てて嬉しいです。", romaji: "Betsu ni. Yaku ni tatete ureshii desu.", chinese: "沒什麼啦，能幫得上忙我也很高興。" }
+                        ]
+                    },
+                    {
+                        name: "場景3：感謝送車",
+                        lines: [
+                            { speaker: "A", japanese: "健一郎、乗せてくれてありがとう。", romaji: "Kenichirō, nosete kurete arigatō.", chinese: "健一郎，謝謝你載我一程。" },
+                            { speaker: "B", japanese: "いいですよ。喜んで役に立ちました。", romaji: "Ii desu yo. Yorokononde yaku ni tachimashita.", chinese: "那里，很高興能幫得上忙。" }
+                        ]
+                    }
+                ]
+            },
+            6: {
+                title: "表現好惡",
+                theme: "表達喜歡和討厭",
+                scenes: [
+                    {
+                        name: "場景1：詢問喜好",
+                        lines: [
+                            { speaker: "A", japanese: "スポーツは好きですか？", romaji: "Supōtsu wa suki desu ka?", chinese: "你喜歡運動嗎?" },
+                            { speaker: "B", japanese: "好きです。特に団体競技が好きです。野球とバスケ、一番好きです。", romaji: "Suki desu. Tokuni dantai kyōgi ga suki desu. Yakyu to basuke, ichiban suki desu.", chinese: "喜歡，尤其是團體運動。我最喜歡棒球和籃球。" }
+                        ]
+                    },
+                    {
+                        name: "場景2：電影愛好",
+                        lines: [
+                            { speaker: "A", japanese: "映画は好きですか？", romaji: "Eiga wa suki desu ka?", chinese: "你喜歡看電影嗎?" },
+                            { speaker: "B", japanese: "大好きです。毎週映画館に見に行きます。", romaji: "Dai-suki desu. Mai-shū eigakan ni mi ni ikimasu.", chinese: "我最喜歡看電影。每個禮拜都會去電影院看。" },
+                            { speaker: "A", japanese: "いいですね。でも、私は家で見ることが多いです。", romaji: "Ii desu ne. Demo, watashi wa ie de miru koto ga ōi desu.", chinese: "真好啊！不過我都在家襄看錄影帶。" }
+                        ]
+                    },
+                    {
+                        name: "場景3：食物偏好比較",
+                        lines: [
+                            { speaker: "A", japanese: "テニスより、スキーの方が好きです。", romaji: "Tenisu yori, sukī no hō ga suki desu.", chinese: "比起網球，我比較喜歡滑雪。" },
+                            { speaker: "B", japanese: "私は肉料理の方が好きです。", romaji: "Watashi wa niku ryōri no hō ga suki desu.", chinese: "我喜歡吃肉。" },
+                            { speaker: "A", japanese: "私はシチリア料理は好きじゃありません。辛すぎます。", romaji: "Watashi wa Shichilia ryōri wa suki ja arimasen. Karasugimasu.", chinese: "我不喜歡墨西哥菜。太辣了。" }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        let synth = window.speechSynthesis;
+        let currentUtterance = null;
+
+        // 初始化
+        function init() {
+            renderSidebar();
+            selectUnit(1);
+        }
+
+        // 渲染側欄
+        function renderSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.innerHTML = '';
+
+            Object.keys(lessonData).forEach(unitNum => {
+                const btn = document.createElement('button');
+                btn.className = 'unit-btn';
+                btn.textContent = `單元 ${unitNum}`;
+                btn.onclick = () => selectUnit(unitNum);
+                if (unitNum == 1) btn.classList.add('active');
+                sidebar.appendChild(btn);
+            });
+        }
+
+        // 選擇單元
+        function selectUnit(unitNum) {
+            document.querySelectorAll('.unit-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const unit = lessonData[unitNum];
+            renderContent(unit);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 渲染內容
+        function renderContent(unit) {
+            const contentArea = document.getElementById('content-area');
+            contentArea.innerHTML = '';
+
+            const title = document.createElement('h2');
+            title.className = 'unit-title';
+            title.textContent = unit.title;
+            contentArea.appendChild(title);
+
+            const theme = document.createElement('p');
+            theme.className = 'unit-theme';
+            theme.textContent = `📌 ${unit.theme}`;
+            contentArea.appendChild(theme);
+
+            unit.scenes.forEach(scene => {
+                const sceneDiv = document.createElement('div');
+                sceneDiv.className = 'scene';
+
+                const sceneTitle = document.createElement('h3');
+                sceneTitle.className = 'scene-title';
+                sceneTitle.textContent = scene.name;
+                sceneDiv.appendChild(sceneTitle);
+
+                scene.lines.forEach(line => {
+                    const dialogueBlock = document.createElement('div');
+                    dialogueBlock.className = 'dialogue-block';
+
+                    const speaker = document.createElement('div');
+                    speaker.className = 'speaker';
+                    speaker.innerHTML = `<span class="speaker-label ${line.speaker}">${line.speaker}</span>`;
+                    dialogueBlock.appendChild(speaker);
+
+                    // 日文
+                    const japaneseDiv = document.createElement('div');
+                    japaneseDiv.className = 'dialogue-line';
+                    japaneseDiv.innerHTML = `<span class="lang-label">日文</span>`;
+                    const japaneseContent = document.createElement('div');
+                    japaneseContent.className = 'text-content japanese';
+                    japaneseContent.textContent = line.japanese;
+                    const japaneseBtn = createSoundButton(line.japanese, 'ja-JP');
+                    japaneseContent.appendChild(japaneseBtn);
+                    japaneseDiv.appendChild(japaneseContent);
+                    dialogueBlock.appendChild(japaneseDiv);
+
+                    // 羅馬拼音
+                    const romajiDiv = document.createElement('div');
+                    romajiDiv.className = 'dialogue-line';
+                    romajiDiv.innerHTML = `<span class="lang-label">羅馬拼音</span>`;
+                    const romajiContent = document.createElement('div');
+                    romajiContent.className = 'text-content romaji';
+                    romajiContent.textContent = line.romaji;
+                    romajiDiv.appendChild(romajiContent);
+                    dialogueBlock.appendChild(romajiDiv);
+
+                    // 中文翻譯
+                    const chineseDiv = document.createElement('div');
+                    chineseDiv.className = 'dialogue-line';
+                    chineseDiv.innerHTML = `<span class="lang-label">中文</span>`;
+                    const chineseContent = document.createElement('div');
+                    chineseContent.className = 'text-content chinese';
+                    chineseContent.textContent = line.chinese;
+                    const chineseBtn = createSoundButton(line.chinese, 'zh-TW');
+                    chineseContent.appendChild(chineseBtn);
+                    chineseDiv.appendChild(chineseContent);
+                    dialogueBlock.appendChild(chineseDiv);
+
+                    sceneDiv.appendChild(dialogueBlock);
+                });
+
+                contentArea.appendChild(sceneDiv);
+            });
+        }
+
+        // 創建發音按鈕
+        function createSoundButton(text, lang) {
+            const btn = document.createElement('button');
+            btn.className = 'sound-btn';
+            btn.title = '點擊發音';
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                speakText(text, lang, btn);
+            };
+            return btn;
+        }
+
+        // 文字轉語音
+        function speakText(text, lang, btn) {
+            synth.cancel();
+
+            currentUtterance = new SpeechSynthesisUtterance(text);
+            currentUtterance.lang = lang;
+            currentUtterance.rate = parseFloat(document.getElementById('speedControl').value);
+
+            btn.classList.add('playing');
+
+            currentUtterance.onend = () => {
+                btn.classList.remove('playing');
+            };
+
+            synth.speak(currentUtterance);
+        }
+
+        // 速度控制
+        document.getElementById('speedControl').addEventListener('input', (e) => {
+            document.getElementById('speedValue').textContent = e.target.value + 'x';
+        });
+
+        // 停止按鈕
+        document.getElementById('stopBtn').addEventListener('click', () => {
+            synth.cancel();
+            document.querySelectorAll('.sound-btn').forEach(btn => btn.classList.remove('playing'));
+        });
+
+        // 重置按鈕
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            synth.cancel();
+            document.querySelectorAll('.sound-btn').forEach(btn => btn.classList.remove('playing'));
+            selectUnit(1);
+        });
+
+        // 初始化應用
+        init();
+    </script>
+</body>
+</html>
