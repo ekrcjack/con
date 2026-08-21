@@ -13,16 +13,17 @@
   --card:#1e293b; --hover:#2d3b52;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
 body{
   font-family:'Hiragino Sans','Noto Sans TC','Segoe UI',sans-serif;
   background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%);
-  color:var(--text);min-height:100vh;
+  color:var(--text);height:100%;
 }
-.wrap{max-width:1180px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;}
+.wrap{max-width:1180px;margin:0 auto;height:100vh;height:100dvh;display:flex;flex-direction:column;}
 .layout{display:flex;flex-direction:column;flex:1;min-height:0;}
 /* 單元 tab（置頂，橫向捲動） */
 .sidebar{
-  width:100%;flex-shrink:0;
+  width:100%;flex-shrink:0;position:sticky;top:0;z-index:45;
   background:rgba(15,23,42,.75);backdrop-filter:blur(8px);
   border-bottom:1px solid var(--line);
   display:flex;gap:6px;padding:10px 14px;
